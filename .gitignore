@@ -1,2 +1,4 @@
 mqtt.beebotte.com.pem
 __pycache__/
+secrets.py
+

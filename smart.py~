@@ -18,12 +18,10 @@ max_up_down = 2.15
 up_down_servo = AngularServo(17, min_angle=-90, max_angle=90, min_pulse_width=min_up_down/1000, max_pulse_width=max_up_down/1000)
 
 # center of box is (0, 0)
-height = 100
-box_size = 30
+height = 4
+box_size = 1
 
 def point_to_angle(x, y):
-    x *= box_size
-    y *= box_size
     if x == 0:
         left_right_angle = 0
     else:
@@ -32,7 +30,7 @@ def point_to_angle(x, y):
             left_right_angle *= -1
 
     hyp = math.sqrt(height ** 2 + x ** 2 + y ** 2)
-    up_down_angle = -math.degrees(math.acos(height / hyp))
+    up_down_angle = math.degrees(math.acos(height / hyp))
 
     return left_right_angle, up_down_angle
 
@@ -50,7 +48,6 @@ def on_message(client, userdata, msg):
     x, y = float(split_data[0]), float(split_data[1])
 
     left_right_angle, up_down_angle = point_to_angle(x, y)
-    print(left_right_angle, up_down_angle)
 
     left_right_servo.angle = left_right_angle
     up_down_servo.angle = up_down_angle
