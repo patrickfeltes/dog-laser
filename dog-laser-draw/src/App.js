@@ -1,9 +1,13 @@
-import React from 'react'
-const { createCanvas, loadImage } = require('canvas')
+import logo from './logo.svg';
+import DrawArea from './DrawArea.js';
+import './App.css';
 
 function App() {
-
-  return <h1>Hello world!</h1>
+  return (
+    <div className="App">
+      <DrawArea />
+    </div>
+  );
 }
 
-export default App
+export default App;
