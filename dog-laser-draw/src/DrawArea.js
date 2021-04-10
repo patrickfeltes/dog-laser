@@ -14,6 +14,7 @@ class DrawArea extends React.Component {
       this.handleMouseMove = this.handleMouseMove.bind(this);
       this.handleMouseUp = this.handleMouseUp.bind(this);
       this.sendToPi = this.sendToPi.bind(this);
+      this.clearDrawing = this.clearDrawing.bind(this);
     }
   
     componentDidMount() {
@@ -62,14 +63,44 @@ class DrawArea extends React.Component {
     }
 
     sendToPi() {
+        var stringToSend = "";
         for (var i = 0; i < this.state.lines.size; i++) {
             var line = this.state.lines.get(i);
             for (var j = 0; j < line.size; j++) {
                 var point = line.get(j);
 
-                console.log(point.get("x") + " " + point.get("y"));
+                var x = point.get("x");
+                var y = point.get("y");
+
+                if (x <= 0 || x > 400 || y <= 0 || y > 400) {
+                    continue;
+                }
+
+                if ((i + j) % 4 != 0) {
+                    continue;
+                }
+
+                var yPiCoords = -1 * (x - 200) / 4;
+                var zPiCoords = 10 + (400 - y) / 4;
+
+                stringToSend += yPiCoords + "," + zPiCoords + ';';
             }
         }
+
+        stringToSend = stringToSend.substring(0, stringToSend.length - 1);
+        console.log(stringToSend);
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ coords: stringToSend })
+        };
+        fetch('http://localhost:5000/to_pi', requestOptions);
+    }
+
+    clearDrawing() {
+        this.setState(prevState => ({
+            lines: new Immutable.List()
+        }));
     }
   
     render() {
@@ -83,6 +114,9 @@ class DrawArea extends React.Component {
           <Drawing lines={this.state.lines} />
           <button onClick={this.sendToPi}>
             Send To Pi
+          </button>
+          <button onClick={this.clearDrawing}>
+              Clear Drawing
           </button>
         </div>
       );
